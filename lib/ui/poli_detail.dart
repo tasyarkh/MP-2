@@ -65,16 +65,16 @@ class _PoliDetailState extends State<PoliDetail> {
       Navigator.pushReplacement(context,
       MaterialPageRoute(builder: (context) => PoliPage()));
       },
-      child: const Text("YA"),
       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+      child: const Text("YA"),
       ),
       // tombol batal
       ElevatedButton(
       onPressed: () {
       Navigator.pop(context);
       },
-      child: Text("Tidak"),
       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+      child: Text("Tidak"),
       )
       ],
       );

@@ -5,8 +5,9 @@ import 'poli_detail.dart';
 class PoliUpdateForm extends StatefulWidget {
   final Poli poli;
 
-  const PoliUpdateForm({Key? key, required this.poli}) : super(key: key);
+  const PoliUpdateForm({super.key, required this.poli});
 
+  @override
   _PoliUpdateFormState createState() => _PoliUpdateFormState();
 }
 

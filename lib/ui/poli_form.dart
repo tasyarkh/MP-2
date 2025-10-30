@@ -3,8 +3,9 @@ import '../model/poli.dart';
 import 'poli_detail.dart';
 
 class PoliForm extends StatefulWidget {
-  const PoliForm({Key? key}) : super(key: key);
+  const PoliForm({super.key});
 
+  @override
   _PoliFormState createState() => _PoliFormState();
 }
 
