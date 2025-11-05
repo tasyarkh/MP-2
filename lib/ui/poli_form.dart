@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../model/poli.dart';
+import '../service/poli_service.dart';
 import 'poli_detail.dart';
 
 class PoliForm extends StatefulWidget {
-  const PoliForm({super.key});
+  const PoliForm({Key? key}) : super(key: key);
 
   @override
   _PoliFormState createState() => _PoliFormState();
@@ -11,19 +12,21 @@ class PoliForm extends StatefulWidget {
 
 class _PoliFormState extends State<PoliForm> {
   final _formKey = GlobalKey<FormState>();
-  final _namaPoliCtrl = TextEditingController();
+  final TextEditingController _namaPoliCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Tambah Poli")),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _fieldNamaPoli(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _tombolSimpan(),
             ],
           ),
@@ -32,23 +35,46 @@ class _PoliFormState extends State<PoliForm> {
     );
   }
 
-  _fieldNamaPoli() {
-    return TextField(
-    decoration: const InputDecoration(labelText: "Nama Poli"),
-    controller: _namaPoliCtrl,
+  Widget _fieldNamaPoli() {
+    return TextFormField(
+      controller: _namaPoliCtrl,
+      decoration: const InputDecoration(
+        labelText: "Nama Poli",
+        border: OutlineInputBorder(),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Nama Poli tidak boleh kosong';
+        }
+        return null;
+      },
     );
   }
 
-  _tombolSimpan() {
+  Widget _tombolSimpan() {
     return ElevatedButton(
-      onPressed: () {
-        Poli poli = Poli(namaPoli: _namaPoliCtrl.text);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => PoliDetail(poli: poli)),
-        );
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          Poli poli = Poli(namaPoli: _namaPoliCtrl.text);
+
+          await PoliService().simpan(poli).then((value) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PoliDetail(poli: value),
+              ),
+            );
+          });
+        }
       },
-      child: const Text("Simpan"),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        backgroundColor: Colors.blue,
+      ),
+      child: const Text(
+        "Simpan",
+        style: TextStyle(fontSize: 16, color: Colors.white),
+      ),
     );
   }
 }

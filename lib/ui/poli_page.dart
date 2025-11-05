@@ -1,109 +1,72 @@
 import 'package:flutter/material.dart';
 import '../model/poli.dart';
-// import 'poli_detail.dart';
-import 'poli_item.dart'; 
+import '../service/poli_service.dart';
+import 'poli_detail.dart';
 import 'poli_form.dart';
+import 'poli_item.dart';
 import '../widget/sidebar.dart';
 
-
 class PoliPage extends StatefulWidget {
-  const PoliPage({super.key});
+  const PoliPage({Key? key}) : super(key: key);
 
   @override
-  State<PoliPage> createState() => _PoliPageState();
+  _PoliPageState createState() => _PoliPageState();
 }
 
 class _PoliPageState extends State<PoliPage> {
-  // final poliAnak = Poli(namaPoli: "Poli Anak");
-  // final poliKandungan = Poli(namaPoli: "Poli Kandungan");
-  // final poliGigi = Poli(namaPoli: "Poli Gigi");
-  // final poliTht = Poli(namaPoli: "Poli THT");
+  Stream<List<Poli>> getList() async* {
+    List<Poli> data = await PoliService().listData();
+    yield data;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Sidebar(), 
-      appBar: AppBar(title: const Text("Data Poli Klinik Tasyee"),
-      actions: [
-        GestureDetector(
-        child: const Icon(Icons.add),
-        onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const PoliForm()),
-        );
-        },
-        )
-      ], 
-    ),
-      body: ListView(
-        children: [
-          // Card(
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => PoliDetail(poli: poliAnak),
-          //         ),
-          //       );
-          //     },
-          //     child: const ListTile(
-          //       title: Text("Poli Anak"),
-          //     ),
-          //   ),
-          // ),
-          // Card(
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => PoliDetail(poli: poliKandungan),
-          //         ),
-          //       );
-          //     },
-          //     child: const ListTile(
-          //       title: Text("Poli Kandungan"),
-          //     ),
-          //   ),
-          // ),
-          // Card(
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => PoliDetail(poli: poliGigi),
-          //         ),
-          //       );
-          //     },
-          //     child: const ListTile(
-          //       title: Text("Poli Gigi"),
-          //     ),
-          //   ),
-          // ),
-          // Card(
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //           builder: (context) => PoliDetail(poli: poliTht),
-          //         ),
-          //       );
-          //     },
-          //     child: const ListTile(
-          //       title: Text("Poli THT"),
-          //     ),
-          //   ),
-          // ),
-
-          PoliItem(poli: Poli(namaPoli: "Poli Anak")),
-          PoliItem(poli: Poli(namaPoli: "Poli Kandungan")),
-          PoliItem(poli: Poli(namaPoli: "Poli Gigi")),
-          PoliItem(poli: Poli(namaPoli: "Poli THT")), 
+      drawer: const Sidebar(),
+      appBar: AppBar(
+        title: const Text("Data Poli"),
+        actions: [
+          GestureDetector(
+            child: const Icon(Icons.add),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PoliForm()),
+              );
+            },
+          ),
         ],
+      ),
+      body: StreamBuilder<List<Poli>>(
+        stream: getList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(snapshot.error.toString()),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text('Data Kosong'),
+            );
+          }
+
+          final List<Poli> data = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return PoliItem(poli: data[index]);
+            },
+          );
+        },
       ),
     );
   }
